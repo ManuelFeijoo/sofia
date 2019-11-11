@@ -110,6 +110,9 @@ class R3BSofMwpc1 : public R3BDetector
     Double32_t fLength_out;         //!  length when exiting active volume
     Double32_t fLength;             //!  length
     Double32_t fELoss;              //!  energy loss
+    Double32_t fM_in;              //!  Particle Mass
+    Double32_t fA_in;              //!  Particle Atomic Number
+    Double32_t fZ_in;              //!  Particle Charge Number
     Int_t fPosIndex;                //!
     TClonesArray* fSofMWPCCollection;   //!  The hit collection
     Bool_t kGeoSaved;               //!
@@ -128,7 +131,10 @@ class R3BSofMwpc1 : public R3BDetector
                         TVector3 momOut,
                         Double_t time,
                         Double_t length,
-                        Double_t eLoss);
+                        Double_t eLoss,
+			Double_t M_in,
+			Double_t A_in,
+			Double_t Z_in);
 
     /** Private method ResetParameters
      **
@@ -148,6 +154,9 @@ inline void R3BSofMwpc1::ResetParameters()
     fMomIn.SetXYZM(0.0, 0.0, 0.0, 0.0);
     fMomOut.SetXYZM(0.0, 0.0, 0.0, 0.0);
     fTime = fLength = fELoss = 0;
+    fM_in=0.;
+    fA_in=0.;
+    fZ_in=0.;
     fPosIndex = 0;
 };
 

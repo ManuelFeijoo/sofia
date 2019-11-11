@@ -42,7 +42,8 @@ class R3BSofMWPCPoint : public FairMCPoint
   R3BSofMWPCPoint(Int_t trackID, Int_t detID, Int_t detCopyID, 
 	      TVector3 posIn, 
 	      TVector3 posOut, TVector3 momIn, TVector3 momOut,
-	      Double_t tof, Double_t length, Double_t eLoss);
+	      Double_t tof, Double_t length, Double_t eLoss,
+	      Double_t M_in, Double_t A_in, Double_t Z_in);
 
 
   /** Copy constructor **/
@@ -64,6 +65,9 @@ class R3BSofMWPCPoint : public FairMCPoint
   Double_t GetPxOut() const { return fPx_out; }
   Double_t GetPyOut() const { return fPy_out; }
   Double_t GetPzOut() const { return fPz_out; }
+  Double_t GetMassIn() const { return fM_in; }
+  Double_t GetAIn() const { return fA_in; }
+  Double_t GetChargeIn() const { return fZ_in; }
 
 
   void PositionIn(TVector3& pos)  { pos.SetXYZ(fX, fY, fZ); }
@@ -95,6 +99,7 @@ class R3BSofMWPCPoint : public FairMCPoint
 
   Double32_t fX_out,  fY_out,  fZ_out;
   Double32_t fPx_out, fPy_out, fPz_out;
+  Double32_t fM_in, fA_in, fZ_in;
   Int_t fDetCopyID; 
 
 

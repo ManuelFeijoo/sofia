@@ -72,6 +72,9 @@ Bool_t R3BSofMwpc1::ProcessHits(FairVolume* vol)
         fLength = gMC->TrackLength();
         gMC->TrackPosition(fPosIn);
         gMC->TrackMomentum(fMomIn);
+	fM_in = gMC->TrackMass() * 1000.;
+	fA_in = (gMC->TrackMass() * 1000.) / 931.4940954;
+	fZ_in = gMC->TrackCharge();
     }
 
     // Sum energy loss for all steps in the active volume
@@ -130,7 +133,10 @@ Bool_t R3BSofMwpc1::ProcessHits(FairVolume* vol)
                TVector3(fMomOut.Px(), fMomOut.Py(), fMomOut.Pz()),
                fTime,
                fLength,
-               fELoss);
+               fELoss,
+	       fM_in,
+	       fA_in,
+	       fZ_in);
 
         // Increment number of TraPoints for this track
         R3BStack* stack = (R3BStack*)gMC->GetStack();
@@ -215,7 +221,10 @@ R3BSofMWPCPoint* R3BSofMwpc1::AddPoint(Int_t trackID,
                             TVector3 momOut,
                             Double_t time,
                             Double_t length,
-                            Double_t eLoss)
+                            Double_t eLoss,
+			    Double_t M_in,
+			    Double_t A_in,
+			    Double_t Z_in)
 {
     TClonesArray& clref = *fSofMWPCCollection;
     Int_t size = clref.GetEntriesFast();
@@ -231,7 +240,10 @@ R3BSofMWPCPoint* R3BSofMwpc1::AddPoint(Int_t trackID,
                                          momOut,
                                          time,
                                          length,
-                                         eLoss);
+                                         eLoss,
+					 M_in,
+					 A_in,
+					 Z_in);
 }
 
 Bool_t R3BSofMwpc1::CheckIfSensitive(std::string name)

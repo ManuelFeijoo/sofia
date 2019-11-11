@@ -15,6 +15,9 @@ using std::flush;
 R3BSofMWPCPoint::R3BSofMWPCPoint() : FairMCPoint() {
   fX_out      = fY_out  = fZ_out  = 0.;
   fPx_out     = fPy_out = fPz_out = 0.;
+  fM_in=0.;
+  fA_in=0.;
+  fZ_in=0.;
 }
 // -------------------------------------------------------------------------
 
@@ -24,9 +27,13 @@ R3BSofMWPCPoint::R3BSofMWPCPoint() : FairMCPoint() {
 R3BSofMWPCPoint::R3BSofMWPCPoint(Int_t trackID, Int_t detID, Int_t detCopyID,
 			 TVector3 posIn, 
 			 TVector3 posOut, TVector3 momIn, TVector3 momOut,
-			 Double_t tof, Double_t length, Double_t eLoss) 
+			 Double_t tof, Double_t length, Double_t eLoss,
+			 Double_t M_in, Double_t A_in, Double_t Z_in) 
   : FairMCPoint(trackID, detID, posIn, momIn, tof, length, eLoss) {
   fDetCopyID = detCopyID;
+  fM_in=M_in;
+  fA_in=A_in;
+  fZ_in=Z_in;
   fX_out  = posOut.X();
   fY_out  = posOut.Y();
   fZ_out  = posOut.Z();

@@ -24,7 +24,8 @@ void runsim(Int_t nEvents = 0)
 
   // Magnetic field
     Bool_t magnet = kTRUE;
-    Float_t fieldScale = -1.0;
+    Float_t fieldScale = 1.5;
+    Double_t measCurrent = 2500.;     // Magnetic field current
 
   //-------------------------------------------------
   // Primaries generation
@@ -77,7 +78,7 @@ void runsim(Int_t nEvents = 0)
     // -----   Create R3B geometry --------------------------------------------
     // R3B Cave definition
     FairModule* cave = new R3BCave("CAVE");
-    cave->SetGeometryFileName("r3b_cave.geo");
+    cave->SetGeometryFileName("r3b_cave_vacuum.geo");
     run->AddModule(cave);
 
     // To skip the detector comment out the line with: run->AddModule(...
@@ -91,22 +92,27 @@ void runsim(Int_t nEvents = 0)
     }
 
     // GLAD
-    run->AddModule(new R3BGladMagnet("glad_v17_flange.geo.root")); // GLAD should not be moved or rotated
+    //run->AddModule(new R3BGladMagnet("glad_v17_flange.geo.root")); // GLAD should not be moved or rotated
+
+    //ALADIN
+
+    //run->AddModule(new R3BAladinMagnet("aladin_v13a.geo.root")); //
+	
 
     // R3B detectors
     // AMS-Tracker + Vacuum chamber + LH2 target
-    if (fTracker) {
-    R3BTra* tra = new R3BTra(geodir+fTrackerGeo, { 0., 0., -65.5 });
-    tra->SetEnergyCut(1e-6);    
-    run->AddModule(tra);
-    }
+    //if (fTracker) {
+    //R3BTra* tra = new R3BTra(geodir+fTrackerGeo, { 0., 0., -65.5 });
+    //tra->SetEnergyCut(1e-6);    
+    //run->AddModule(tra);
+    //}
 
     // CALIFA
-    R3BCalifa* califa = new R3BCalifa("califa_15_v8.11_iPhos1.03.geo.root", { 0., 0., -66.5 });
-    califa->SelectGeometryVersion(10);
+    //R3BCalifa* califa = new R3BCalifa("califa_15_v8.11_iPhos1.03.geo.root", { 0., 0., -66.5 });
+    //califa->SelectGeometryVersion(10);
     // Selecting the Non-uniformity of the crystals (1 means +-1% max deviation)
-    califa->SetNonUniformity(1.0);
-    run->AddModule(califa);
+    //califa->SetNonUniformity(1.0);
+    //run->AddModule(califa);
 
     // NeuLAND
     //run->AddModule(new R3BLand("neuland_s2018.geo.root", { 0., 0., 1400. + 12 * 5. }));
@@ -115,22 +121,32 @@ void runsim(Int_t nEvents = 0)
 
     //run->AddModule(new R3BSofMwpc0(geodir+"mwpc_0.geo.root", { 0., 0., -110. }));
 
-    run->AddModule(new R3BSofMwpc1(geodir+"mwpc_1.geo.root", { 0., 0., 16. }));
+    run->AddModule(new R3BSofMwpc1(geodir+"mwpc_1.geo.root", { 0., 0., 45.6 }));
 
-    run->AddModule(new R3BSofTWIM(geodir+"twinmusic_v19a.geo.root", { 0., 0., 50. }));
+    //run->AddModule(new R3BSofTWIM(geodir+"twinmusic_v19a.geo.root", { 0., 0., 81.2 }));
 
-    run->AddModule(new R3BSofMwpc2(geodir+"mwpc_2.geo.root", { 0., 0., 95. }));
+    //run->AddModule(new R3BSofMwpc2(geodir+"mwpc_2.geo.root", { 0., 0., 95. }));
 
-    run->AddModule(new R3BSofMwpc3(geodir+"mwpc_3.geo.root"));
+    TGeoRotation *rot_mwpc = new TGeoRotation("MWPCrot");
+       rot_mwpc->RotateY(-13.2);
 
-    run->AddModule(new R3BSofTofWall(geodir+"sof_tof_v19.geo.root"));
+    run->AddModule(new R3BSofMwpc3(geodir+"mwpc_3.geo.root", { -140.65, 0., 616.85,rot_mwpc}));
+
+    run->AddModule(new R3BSofTofWall(geodir+"sof_tof_v19.geo.root", { -156.20, 0., 685.3,rot_mwpc }));
 
     // -----   Create R3B  magnetic field ----------------------------------------
     // NB: <D.B>
     // If the Global Position of the Magnet is changed
     // the Field Map has to be transformed accordingly
-    R3BGladFieldMap* magField = new R3BGladFieldMap("R3BGladMap");
+    //R3BGladFieldMap* magField = new R3BGladFieldMap("R3BGladMap");
+    //magField->SetScale(fieldScale);
+
+    R3BAladinFieldMap* magField = new R3BAladinFieldMap("AladinMaps");
+    magField->SetCurrent(measCurrent);
     magField->SetScale(fieldScale);
+
+    //R3BFieldConst* magField = new R3BFieldConst("ConstMap", -100,100,-100,100,255-90,255+90,0.,16,0.);
+
 
     if (magnet == kTRUE)
     {
@@ -160,9 +176,27 @@ void runsim(Int_t nEvents = 0)
         //primGen->AddGenerator(boxGen);
 
         // 128-Sn fragment
-        R3BIonGenerator* ionGen = new R3BIonGenerator(50, 128, 50, 1, 0., 0., 1.39/1.3-1.39/1.3*0.01);
-        ionGen->SetSpotRadius(0.1, +65.5, 0.);
-        primGen->AddGenerator(ionGen);
+        //R3BIonGenerator* ionGen = new R3BIonGenerator(50, 128, 50, 1, 0., 0., 1.39/1.3-1.39/1.3*0.01);
+        //ionGen->SetSpotRadius(0.1, +65.5, 0.);
+        //primGen->AddGenerator(ionGen);
+
+	//Different fission fragments
+
+	R3BIonGenerator* ionGen1 = new R3BIonGenerator(40, 90, 40, 1, 0., 0., 109.3/90); //E=303 MeV aprox.
+        ionGen1->SetSpotRadius(0., -132.15, 0.);
+	primGen->AddGenerator(ionGen1);
+
+	R3BIonGenerator* ionGen2 = new R3BIonGenerator(40, 91, 40, 1, 0., 0., 110.5/91);
+        ionGen2->SetSpotRadius(0., -132.15, 0.);
+	primGen->AddGenerator(ionGen2);
+
+	R3BIonGenerator* ionGen3 = new R3BIonGenerator(40, 92, 40, 1, 0., 0., 111.7/92);
+        ionGen3->SetSpotRadius(0., -132.15, 0.);
+	primGen->AddGenerator(ionGen3);
+
+	R3BIonGenerator* ionGen4 = new R3BIonGenerator(40, 93, 40, 1, 0., 0., 112.9/93);
+        ionGen4->SetSpotRadius(0., -132.15, 0.);
+	primGen->AddGenerator(ionGen4);
 
         // neutrons
         FairBoxGenerator* boxGen_n = new FairBoxGenerator(2112, 3);
